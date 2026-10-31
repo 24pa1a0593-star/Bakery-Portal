@@ -238,13 +238,13 @@ const AdminDashboard = () => {
               </div>
             </div>
 
-            <div className="stat-card">
+            <div className="stat-card" style={{ cursor: "pointer" }} onClick={() => navigate("/admin/contacts")}>
               <div className="stat-icon-wrapper">
                 <FaEnvelope />
               </div>
               <div>
                 <div className="stat-value">{stats.totalMessages || 0}</div>
-                <div className="stat-label">Contact Messages</div>
+                <div className="stat-label">Contact Messages &rarr;</div>
               </div>
             </div>
           </div>

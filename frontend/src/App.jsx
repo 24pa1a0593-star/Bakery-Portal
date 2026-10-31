@@ -21,6 +21,7 @@ import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminOrders from './pages/admin/AdminOrders';
 import AdminProducts from './pages/admin/AdminProducts';
+import AdminContacts from './pages/admin/AdminContacts';
 
 // Non-admin layout with Navbar and Footer
 const PublicLayout = () => {
@@ -87,6 +88,7 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="/admin/contacts" element={<ProtectedRoute><AdminContacts /></ProtectedRoute>} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />

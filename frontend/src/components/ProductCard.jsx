@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { FaPlus, FaCheck, FaStar } from 'react-icons/fa';
+import { FaPlus, FaCheck, FaStar, FaEye } from 'react-icons/fa';
+import ProductDetailsModal from './ProductDetailsModal';
 
 export const getCategoryImage = (category) => {
   const cat = (category || '').toLowerCase();
@@ -24,6 +25,7 @@ export const getCategoryImage = (category) => {
 const ProductCard = ({ product, onAddToCart }) => {
   const [imgError, setImgError] = useState(false);
   const [addedRecently, setAddedRecently] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   if (!product) return null;
 
@@ -39,7 +41,8 @@ const ProductCard = ({ product, onAddToCart }) => {
     return 'badge-cakes';
   };
 
-  const handleAdd = () => {
+  const handleAdd = (e) => {
+    e.stopPropagation();
     if (onAddToCart) {
       onAddToCart(product);
       setAddedRecently(true);
@@ -47,11 +50,19 @@ const ProductCard = ({ product, onAddToCart }) => {
     }
   };
 
+  const handleModalAdd = (prod, qty) => {
+    if (onAddToCart) {
+      for (let i = 0; i < qty; i++) {
+        onAddToCart(prod);
+      }
+    }
+  };
+
   return (
     <>
       <style>{`
         .product-card {
-          min-height: 380px;
+          min-height: 400px;
           display: flex;
           flex-direction: column;
           position: relative;
@@ -60,6 +71,7 @@ const ProductCard = ({ product, onAddToCart }) => {
           box-shadow: var(--shadow);
           overflow: hidden;
           transition: transform 0.3s ease, box-shadow 0.3s ease;
+          cursor: pointer;
         }
         .product-card:hover {
           transform: translateY(-6px);
@@ -68,14 +80,14 @@ const ProductCard = ({ product, onAddToCart }) => {
         .product-image-container {
           position: relative;
           height: 200px;
+          background-color: var(--cream-dark);
           overflow: hidden;
-          background: linear-gradient(135deg, var(--cream-dark), var(--pink));
         }
         .product-image {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          transition: transform 0.4s ease;
+          transition: transform 0.5s ease;
         }
         .product-card:hover .product-image {
           transform: scale(1.06);
@@ -87,82 +99,127 @@ const ProductCard = ({ product, onAddToCart }) => {
           align-items: center;
           justify-content: center;
           font-size: 3rem;
-          background: linear-gradient(135deg, var(--cream-dark), var(--pink));
+          background-color: var(--cream-dark);
         }
         .product-featured-badge {
           position: absolute;
-          top: 12px;
-          left: 12px;
-          background: linear-gradient(135deg, var(--gold), #B8960E);
-          color: var(--white);
-          font-size: 0.75rem;
-          font-weight: 700;
+          top: 10px;
+          left: 10px;
+          background: var(--chocolate);
+          color: var(--gold-light);
           padding: 4px 10px;
-          border-radius: 50px;
+          border-radius: 20px;
+          font-size: 0.72rem;
+          font-weight: 700;
           display: flex;
           align-items: center;
           gap: 4px;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.15);
           z-index: 2;
+        }
+        .product-quick-view {
+          position: absolute;
+          inset: 0;
+          background: rgba(44, 26, 14, 0.4);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          opacity: 0;
+          transition: opacity 0.25s ease;
+          z-index: 3;
+        }
+        .product-card:hover .product-quick-view {
+          opacity: 1;
+        }
+        .quick-view-btn {
+          background: var(--white);
+          color: var(--chocolate);
+          font-weight: 600;
+          font-size: 0.8rem;
+          padding: 8px 16px;
+          border-radius: 20px;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          box-shadow: var(--shadow);
         }
         .product-category-tag {
           position: absolute;
-          bottom: 12px;
-          left: 12px;
+          bottom: 10px;
+          left: 10px;
           z-index: 2;
         }
+        .badge {
+          font-size: 0.72rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          padding: 4px 8px;
+          border-radius: 4px;
+        }
+        .badge-cakes { background-color: var(--pink); color: var(--chocolate); }
+        .badge-cupcakes { background-color: #ffd1dc; color: #5a2a35; }
+        .badge-cookies { background-color: #ffe0b2; color: #5d4037; }
+        .badge-pastries { background-color: #e1bee7; color: #4a148c; }
+        .badge-breads { background-color: #d7ccc8; color: #3e2723; }
+
         .product-details {
-          padding: 20px;
+          padding: 16px;
           display: flex;
           flex-direction: column;
-          flex: 1;
+          flex-grow: 1;
         }
         .product-name {
           font-family: var(--font-heading);
-          font-size: 1.25rem;
+          font-size: 1.15rem;
           color: var(--chocolate);
-          margin-bottom: 8px;
+          margin-bottom: 6px;
           line-height: 1.3;
         }
         .product-desc {
+          font-size: 0.85rem;
           color: var(--text-light);
-          font-size: 0.88rem;
-          line-height: 1.5;
-          margin-bottom: 16px;
+          margin-bottom: 14px;
           display: -webkit-box;
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
-          flex: 1;
+          line-height: 1.4;
+          flex-grow: 1;
         }
         .product-footer {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-top: auto;
-          padding-top: 12px;
-          border-top: 1px dashed var(--cream-dark);
+          margin-bottom: 12px;
         }
         .product-price {
-          font-size: 1.25rem;
           font-weight: 700;
-          color: var(--brown-dark);
+          font-size: 1.15rem;
+          color: var(--brown);
         }
         .product-add-btn {
           width: 100%;
-          margin-top: 14px;
-          padding: 10px 16px;
-          font-size: 0.9rem;
+          justify-content: center;
+          padding: 9px;
+          font-size: 0.88rem;
+          font-weight: 600;
           border-radius: var(--radius-sm);
         }
       `}</style>
-      <div className="product-card">
+
+      <div className="product-card" onClick={() => setShowModal(true)}>
         <div className="product-image-container">
           {product.featured && (
             <span className="product-featured-badge">
               <FaStar size={10} /> Bestseller
             </span>
           )}
+
+          <div className="product-quick-view">
+            <span className="quick-view-btn">
+              <FaEye size={12} /> View Details
+            </span>
+          </div>
 
           {imgError ? (
             <div className="product-fallback-img">🧁</div>
@@ -212,6 +269,13 @@ const ProductCard = ({ product, onAddToCart }) => {
           </button>
         </div>
       </div>
+
+      <ProductDetailsModal
+        product={product}
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onAddToCart={handleModalAdd}
+      />
     </>
   );
 };

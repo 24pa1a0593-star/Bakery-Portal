@@ -40,6 +40,8 @@ router.post('/login', [
     res.json({
       success: true,
       message: 'Login successful',
+      token,
+      admin: { id: admin._id, username: admin.username, email: admin.email, role: admin.role },
       data: {
         token,
         admin: {

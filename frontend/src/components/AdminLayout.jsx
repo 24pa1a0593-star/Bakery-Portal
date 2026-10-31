@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate, Link } from 'react-router-dom';
-import { FaChartBar, FaBox, FaBirthdayCake, FaSignOutAlt, FaStore, FaUserCircle } from 'react-icons/fa';
+import { FaChartBar, FaBox, FaBirthdayCake, FaSignOutAlt, FaStore, FaUserCircle, FaEnvelope } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -242,6 +242,17 @@ const AdminLayout = ({ children, title }) => {
               >
                 <FaBirthdayCake />
                 <span>Products</span>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/admin/contacts"
+                className={({ isActive }) =>
+                  `admin-nav-item ${isActive ? 'active' : ''}`
+                }
+              >
+                <FaEnvelope />
+                <span>Inquiries</span>
               </NavLink>
             </li>
           </ul>

@@ -31,7 +31,7 @@ const AdminLogin = () => {
         password,
       });
 
-      const token = res.data?.token || res.data?.adminToken;
+      const token = res.data?.token || res.data?.data?.token || res.data?.adminToken;
       const user = res.data?.admin || res.data?.user || { email: email.trim(), username: 'Admin' };
 
       if (!token) {

@@ -5,28 +5,29 @@ import api from '../api/axios';
 import ProductCard from '../components/ProductCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useCart } from '../context/CartContext';
+import { INITIAL_PRODUCTS } from '../data/initialProducts';
 import toast from 'react-hot-toast';
 
 const Home = () => {
-  const [featuredProducts, setFeaturedProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const initialFeatured = INITIAL_PRODUCTS.filter(p => p.featured).slice(0, 6);
+  const [featuredProducts, setFeaturedProducts] = useState(initialFeatured);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
-        setLoading(true);
-        setError(null);
         const res = await api.get('/products?featured=true');
-        // Handle variations in API response: array, or { data: [...] }, or { products: [...] }
         const data = Array.isArray(res.data)
           ? res.data
-          : res.data.products || res.data.data || [];
-        setFeaturedProducts(data.slice(0, 6));
+          : res.data?.products || res.data?.data || [];
+        if (data && data.length > 0) {
+          setFeaturedProducts(data.slice(0, 6));
+        }
       } catch (err) {
-        console.error('Error fetching featured products:', err);
-        setError('Failed to load featured products. Please try again later.');
+        console.warn('API fetch featured failed, using initial featured bakery products:', err.message);
+        // keep initialFeatured
       } finally {
         setLoading(false);
       }

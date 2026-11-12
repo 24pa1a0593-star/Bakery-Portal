@@ -12,16 +12,21 @@ const ProductDetailsModal = ({ product, isOpen, onClose, onAddToCart }) => {
   const imgSrc = (!imgError && product.imageUrl) ? product.imageUrl : getCategoryImage(product.category);
 
   const defaultIngredients = {
-    Cakes: 'Organic Wheat Flour, Pure Butter, Farm Eggs, Cane Sugar, Belgian Cocoa / Vanilla Bean, Fresh Cream',
-    Cupcakes: 'Flour, Sweet Butter, Fresh Milk, Cane Sugar, Madagascan Vanilla, Artisan Frosting',
-    Cookies: 'Rolled Oats, Pure Butter, Brown Sugar, Dark Chocolate Chunks, Sea Salt, Eggs',
-    Pastries: 'Puff Pastry Layers, French Butter, Cream Custard, Fresh Seasonal Fruits, Glaze',
-    Breads: 'Stone-ground Wheat Flour, Sourdough Starter / Yeast, Spring Water, Sea Salt'
+    'Cakes': 'Organic Wheat Flour, Pure Butter, Farm Eggs, Cane Sugar, Belgian Cocoa / Vanilla Bean, Fresh Cream',
+    'Birthday Cakes': 'Madagascan Vanilla Bean, Cream Cheese Frosting, Dairy Butter, Rainbow Sprinkles, Belgian Couverture Drip',
+    'Pastries': 'Laminated Puff Pastry, French Normandy Butter, Cream Custard, Fresh Seasonal Fruits, Natural Glaze',
+    'Cupcakes': 'Flour, Sweet Butter, Fresh Milk, Cane Sugar, Madagascan Vanilla, Artisan Frosting Rosettes',
+    'Cookies': 'Rolled Whole Oats, European Butter, Brown Sugar, Dark Chocolate Chunks, Sea Salt, Farm Eggs',
+    'Bread': 'Stone-ground Whole Wheat Flour, 36-hr Natural Sourdough Starter, Spring Water, Sea Salt',
+    'Breads': 'Stone-ground Whole Wheat Flour, Natural Sourdough Starter, Spring Water, Sea Salt',
+    'Donuts': 'Yeasted Brioche Dough, Pure Cane Sugar Glaze, Belgian Chocolate Icing, Farm Butter, Whole Milk',
+    'Chocolates': 'Belgian Couverture Cocoa 72%, Dairy Cream, Roasted Hazelnuts, Cocoa Butter, Sea Salt',
+    'Desserts': 'Italian Mascarpone, Arabica Espresso, Madagascar Vanilla Pods, Farm Cream, Dutch Cocoa'
   };
 
   const ingredientsList = product.ingredients && product.ingredients.length > 0
     ? (Array.isArray(product.ingredients) ? product.ingredients.join(', ') : product.ingredients)
-    : (defaultIngredients[product.category] || 'Flour, Butter, Sugar, Milk, Natural Flavorings');
+    : (defaultIngredients[product.category] || 'Flour, Butter, Sugar, Milk, Natural Artisan Flavorings');
 
   const handleAdd = () => {
     if (onAddToCart) {
@@ -80,6 +85,7 @@ const ProductDetailsModal = ({ product, isOpen, onClose, onAddToCart }) => {
                     className="qty-btn"
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                     disabled={quantity <= 1}
+                    aria-label="Decrease quantity"
                   >
                     <FaMinus size={12} />
                   </button>
@@ -87,6 +93,7 @@ const ProductDetailsModal = ({ product, isOpen, onClose, onAddToCart }) => {
                   <button
                     className="qty-btn"
                     onClick={() => setQuantity((q) => q + 1)}
+                    aria-label="Increase quantity"
                   >
                     <FaPlus size={12} />
                   </button>
@@ -139,6 +146,8 @@ const ProductDetailsModal = ({ product, isOpen, onClose, onAddToCart }) => {
           box-shadow: 0 20px 50px rgba(61, 26, 0, 0.35);
           border: 1px solid rgba(201, 168, 76, 0.25);
           animation: slideUp 0.3s ease;
+          max-height: 90vh;
+          overflow-y: auto;
         }
         .product-modal-close {
           position: absolute;
@@ -149,14 +158,14 @@ const ProductDetailsModal = ({ product, isOpen, onClose, onAddToCart }) => {
           width: 36px;
           height: 36px;
           border-radius: 50%;
-          cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
+          cursor: pointer;
           color: var(--chocolate);
-          z-index: 10;
-          transition: var(--transition);
           box-shadow: var(--shadow-sm);
+          z-index: 5;
+          transition: var(--transition);
         }
         .product-modal-close:hover {
           background: var(--chocolate);
@@ -165,19 +174,12 @@ const ProductDetailsModal = ({ product, isOpen, onClose, onAddToCart }) => {
         }
         .product-modal-grid {
           display: grid;
-          grid-template-columns: 1fr 1.2fr;
-        }
-        @media (max-width: 768px) {
-          .product-modal-grid {
-            grid-template-columns: 1fr;
-            max-height: 85vh;
-            overflow-y: auto;
-          }
+          grid-template-columns: 1fr 1fr;
         }
         .product-modal-image-col {
           position: relative;
-          background: #fbf5ef;
-          min-height: 320px;
+          background: var(--cream-dark);
+          min-height: 380px;
         }
         .product-modal-img {
           width: 100%;
@@ -191,72 +193,72 @@ const ProductDetailsModal = ({ product, isOpen, onClose, onAddToCart }) => {
           left: 16px;
           background: var(--chocolate);
           color: var(--gold-light);
-          padding: 4px 12px;
+          padding: 6px 14px;
+          border-radius: 20px;
           font-size: 0.75rem;
           font-weight: 700;
-          letter-spacing: 0.5px;
-          border-radius: 20px;
-          text-transform: uppercase;
+          box-shadow: var(--shadow-sm);
         }
         .product-modal-info-col {
-          padding: 32px 28px;
+          padding: 36px 30px;
           display: flex;
           flex-direction: column;
-          gap: 12px;
         }
         .product-modal-badge {
-          align-self: flex-start;
-          background: var(--cream-dark);
-          color: var(--brown-dark);
+          display: inline-block;
           font-size: 0.75rem;
           font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 1px;
-          padding: 4px 10px;
-          border-radius: 6px;
+          letter-spacing: 0.5px;
+          color: var(--brown);
+          background: var(--cream);
+          padding: 4px 12px;
+          border-radius: 20px;
+          align-self: flex-start;
+          margin-bottom: 12px;
+          border: 1px solid var(--cream-dark);
         }
         .product-modal-title {
           font-family: var(--font-heading);
+          font-size: 1.8rem;
           color: var(--chocolate);
-          font-size: 1.6rem;
-          margin: 0;
+          margin-bottom: 8px;
+          line-height: 1.25;
         }
         .product-modal-price {
-          font-size: 1.5rem;
+          font-size: 1.6rem;
           font-weight: 700;
           color: var(--brown);
+          margin-bottom: 16px;
         }
         .product-modal-desc {
           color: var(--text-light);
           font-size: 0.95rem;
           line-height: 1.6;
+          margin-bottom: 20px;
         }
         .product-modal-section {
-          padding-top: 6px;
+          margin-bottom: 16px;
         }
         .product-modal-subtitle {
           font-size: 0.85rem;
-          font-weight: 700;
+          color: var(--chocolate);
+          font-weight: 600;
           text-transform: uppercase;
           letter-spacing: 0.5px;
-          color: var(--chocolate);
-          margin-bottom: 4px;
+          margin-bottom: 6px;
         }
         .product-modal-ingredients {
-          font-size: 0.85rem;
-          color: var(--text);
-          font-style: italic;
-          background: #fcf8f3;
-          padding: 8px 12px;
-          border-radius: 8px;
-          border-left: 3px solid var(--gold);
+          font-size: 0.88rem;
+          color: var(--text-light);
+          line-height: 1.5;
         }
         .status-pill {
           display: inline-block;
-          font-size: 0.8rem;
+          padding: 4px 12px;
+          border-radius: 20px;
+          font-size: 0.82rem;
           font-weight: 600;
-          padding: 3px 10px;
-          border-radius: 12px;
         }
         .status-in-stock {
           background: #e8f5e9;
@@ -269,59 +271,65 @@ const ProductDetailsModal = ({ product, isOpen, onClose, onAddToCart }) => {
         .product-modal-actions {
           display: flex;
           align-items: center;
-          gap: 14px;
-          margin-top: 14px;
-          padding-top: 14px;
-          border-top: 1px solid var(--gray-200);
+          gap: 16px;
+          margin-top: auto;
+          padding-top: 24px;
         }
         .product-modal-qty {
           display: flex;
           align-items: center;
-          border: 1.5px solid var(--gray-300);
-          border-radius: var(--radius-sm);
-          overflow: hidden;
+          border: 2px solid var(--cream-dark);
+          border-radius: 50px;
+          background: var(--cream);
+          padding: 4px;
         }
-        .qty-btn {
-          background: #fbf5ef;
+        .product-modal-qty .qty-btn {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
           border: none;
-          width: 34px;
-          height: 38px;
-          cursor: pointer;
+          background: var(--white);
+          color: var(--chocolate);
           display: flex;
           align-items: center;
           justify-content: center;
-          color: var(--chocolate);
+          cursor: pointer;
           transition: var(--transition);
         }
-        .qty-btn:hover:not(:disabled) {
-          background: var(--brown);
-          color: var(--white);
-        }
-        .qty-btn:disabled {
+        .product-modal-qty .qty-btn:disabled {
           opacity: 0.4;
           cursor: not-allowed;
         }
-        .qty-number {
-          padding: 0 14px;
-          font-weight: 600;
+        .product-modal-qty .qty-number {
+          padding: 0 16px;
+          font-weight: 700;
           font-size: 1rem;
-          color: var(--text);
+          color: var(--chocolate);
         }
         .product-modal-add-btn {
           flex: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          padding: 11px 16px;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
+          padding: 12px 20px;
+          font-size: 0.95rem;
+          border-radius: 50px;
         }
         @keyframes slideUp {
-          from { transform: translateY(20px); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
+          from { opacity: 0; transform: translateY(30px) scale(0.97); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @media (max-width: 768px) {
+          .product-modal-grid {
+            grid-template-columns: 1fr;
+          }
+          .product-modal-image-col {
+            min-height: 220px;
+            max-height: 260px;
+          }
+          .product-modal-info-col {
+            padding: 24px 20px;
+          }
+          .product-modal-title {
+            font-size: 1.4rem;
+          }
         }
       `}</style>
     </div>
@@ -329,4 +337,3 @@ const ProductDetailsModal = ({ product, isOpen, onClose, onAddToCart }) => {
 };
 
 export default ProductDetailsModal;
-

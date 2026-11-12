@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 
 // Components
@@ -9,12 +9,20 @@ import Footer from './components/Footer';
 // Public Pages
 import Home from './pages/Home';
 import Menu from './pages/Menu';
+import AllProducts from './pages/AllProducts';
+import Categories from './pages/Categories';
+import About from './pages/About';
+import Contact from './pages/Contact';
 import CustomOrder from './pages/CustomOrder';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import OrderConfirmation from './pages/OrderConfirmation';
 import OrderTracking from './pages/OrderTracking';
-import Contact from './pages/Contact';
+
+// Auth Pages
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Profile from './pages/Profile';
 
 // Admin Pages
 import AdminLogin from './pages/admin/AdminLogin';
@@ -36,10 +44,21 @@ const PublicLayout = () => {
   );
 };
 
-// ProtectedRoute for Admin
-const ProtectedRoute = ({ children }) => {
+// ProtectedRoute for Customer Profile / Account
+const ProtectedUserRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
+  const location = useLocation();
+
   if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+  return children ? children : <Outlet />;
+};
+
+// ProtectedRoute for Admin Dashboard
+const ProtectedAdminRoute = ({ children }) => {
+  const { isAdmin, adminToken } = useAuth();
+  if (!isAdmin && !adminToken) {
     return <Navigate to="/admin/login" replace />;
   }
   return children ? children : <Outlet />;
@@ -50,47 +69,72 @@ function App() {
     <Routes>
       {/* Public Pages with Navbar & Footer */}
       <Route element={<PublicLayout />}>
+        {/* Core Navigation */}
         <Route path="/" element={<Home />} />
         <Route path="/menu" element={<Menu />} />
+        <Route path="/products" element={<AllProducts />} />
+        <Route path="/categories" element={<Categories />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+
+        {/* Customer Auth Pages */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedUserRoute>
+              <Profile />
+            </ProtectedUserRoute>
+          }
+        />
+
+        {/* Orders & Cart */}
         <Route path="/custom-order" element={<CustomOrder />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
         <Route path="/track-order" element={<OrderTracking />} />
-        <Route path="/contact" element={<Contact />} />
       </Route>
 
-      {/* Admin Login (no Navbar / Footer) */}
+      {/* Admin Login (no public Navbar / Footer) */}
       <Route path="/admin/login" element={<AdminLogin />} />
 
-      {/* Admin Protected Routes (no Navbar / Footer) */}
+      {/* Admin Protected Routes */}
       <Route
         path="/admin"
         element={
-          <ProtectedRoute>
+          <ProtectedAdminRoute>
             <AdminDashboard />
-          </ProtectedRoute>
+          </ProtectedAdminRoute>
         }
       />
       <Route
         path="/admin/orders"
         element={
-          <ProtectedRoute>
+          <ProtectedAdminRoute>
             <AdminOrders />
-          </ProtectedRoute>
+          </ProtectedAdminRoute>
         }
       />
       <Route
         path="/admin/products"
         element={
-          <ProtectedRoute>
+          <ProtectedAdminRoute>
             <AdminProducts />
-          </ProtectedRoute>
+          </ProtectedAdminRoute>
         }
       />
-      <Route path="/admin/contacts" element={<ProtectedRoute><AdminContacts /></ProtectedRoute>} />
+      <Route
+        path="/admin/contacts"
+        element={
+          <ProtectedAdminRoute>
+            <AdminContacts />
+          </ProtectedAdminRoute>
+        }
+      />
 
-      {/* Fallback */}
+      {/* Fallback to Home */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

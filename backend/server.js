@@ -93,12 +93,16 @@ function startServer(isDemo = false, portToUse = PORT) {
 }
 
 // Attempt to connect to MongoDB; fallback to Demo Mode if offline
-mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 2000 })
-  .then(() => {
-    console.log('✅ Connected to MongoDB');
-    startServer(false);
-  })
-  .catch(err => {
-    console.log(`⚠️ MongoDB offline (${err.message}). Activating In-Memory Demo Mode...`);
-    startServer(true);
-  });
+if (require.main === module) {
+  mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 2000 })
+    .then(() => {
+      console.log('✅ Connected to MongoDB');
+      startServer(false);
+    })
+    .catch(err => {
+      console.log(`⚠️ MongoDB offline (${err.message}). Activating In-Memory Demo Mode...`);
+      startServer(true);
+    });
+}
+
+module.exports = app;

@@ -1,12 +1,14 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 
 const Checkout = () => {
   const navigate = useNavigate();
   const { items, getTotal, clearCart } = useCart();
+  const { user } = useAuth();
 
   const tomorrowStr = useMemo(() => {
     const d = new Date();
@@ -15,14 +17,26 @@ const Checkout = () => {
   }, []);
 
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
+    name: user?.name || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    address: user?.address || '',
     deliveryDate: tomorrowStr,
     deliveryTime: 'Morning (9am-12pm)',
     instructions: '',
   });
+
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        name: prev.name || user.name || '',
+        email: prev.email || user.email || '',
+        phone: prev.phone || user.phone || '',
+        address: prev.address || user.address || '',
+      }));
+    }
+  }, [user]);
 
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);

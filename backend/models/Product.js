@@ -5,7 +5,22 @@ const productSchema = new mongoose.Schema({
   name: { type: String, required: [true, 'Name required'], trim: true, maxlength: 100 },
   description: { type: String, required: [true, 'Description required'], maxlength: 500 },
   price: { type: Number, required: [true, 'Price required'], min: 0 },
-  category: { type: String, required: [true, 'Category required'], enum: ['Cakes', 'Cupcakes', 'Cookies', 'Pastries', 'Breads'] },
+  category: {
+    type: String,
+    required: [true, 'Category required'],
+    enum: [
+      'Cakes',
+      'Birthday Cakes',
+      'Pastries',
+      'Cupcakes',
+      'Cookies',
+      'Bread',
+      'Breads',
+      'Donuts',
+      'Chocolates',
+      'Desserts'
+    ]
+  },
   imageUrl: { type: String, default: '' },
   available: { type: Boolean, default: true },
   featured: { type: Boolean, default: false }

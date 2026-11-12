@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 
 const Product = require('../models/Product');
 const AdminUser = require('../models/AdminUser');
+const User = require('../models/User');
 const demoStore = require('../utils/demoStore');
 
 async function seedDatabase() {
@@ -15,13 +16,14 @@ async function seedDatabase() {
     await mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 2500 });
     console.log('✅ Connected to MongoDB');
 
-    console.log('🧹 Clearing Product and AdminUser collections...');
+    console.log('🧹 Clearing Product, AdminUser, and User collections...');
     await Product.deleteMany({});
     await AdminUser.deleteMany({});
+    await User.deleteMany({});
 
     // Seed products
     const inserted = await Product.insertMany(demoStore.products);
-    console.log(`🍰 Successfully seeded ${inserted.length || 16} bakery products into MongoDB!`);
+    console.log(`🍰 Successfully seeded ${inserted.length || demoStore.products.length} bakery products across all 9 categories into MongoDB!`);
 
     const username = process.env.ADMIN_SEED_USERNAME || 'admin';
     const email = (process.env.ADMIN_SEED_EMAIL || 'admin@sweetbliss.com').toLowerCase();
@@ -35,8 +37,19 @@ async function seedDatabase() {
       passwordHash,
       role: 'superadmin'
     });
-
     console.log(`👤 Successfully seeded Admin User: ${email}`);
+
+    // Seed demo customer user
+    const userPassHash = await bcrypt.hash('User@123', salt);
+    await User.create({
+      name: 'Priya Sharma',
+      email: 'priya@example.com',
+      phone: '9876543210',
+      passwordHash: userPassHash,
+      address: '42 Baker Street, Bandra West, Mumbai',
+      role: 'customer'
+    });
+    console.log(`👤 Successfully seeded Demo Customer User: priya@example.com / User@123`);
     console.log('🎉 Seeding completed successfully!');
     await mongoose.disconnect();
     process.exit(0);

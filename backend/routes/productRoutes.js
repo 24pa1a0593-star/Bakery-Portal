@@ -13,32 +13,72 @@ const isMongo = () => mongoose.connection.readyState === 1;
  */
 router.get('/', async (req, res) => {
   try {
-    const { category, search, featured } = req.query;
+    const { category, search, featured, sort } = req.query;
 
     if (isMongo()) {
       const query = { available: true };
-      if (category && category !== 'All') query.category = category;
-      if (featured === 'true') query.featured = true;
+
+      if (category && category !== 'All') {
+        const catNorm = category.trim().toLowerCase();
+        if (catNorm === 'bread' || catNorm === 'breads') {
+          query.category = { $in: ['Bread', 'Breads'] };
+        } else if (catNorm === 'cakes') {
+          query.category = 'Cakes';
+        } else {
+          query.category = { $regex: new RegExp(`^${category.trim()}$`, 'i') };
+        }
+      }
+
+      if (featured === 'true') {
+        query.featured = true;
+      }
+
       if (search && search.trim()) {
         const re = { $regex: search.trim(), $options: 'i' };
-        query.$or = [{ name: re }, { description: re }];
+        query.$or = [{ name: re }, { description: re }, { category: re }];
       }
-      const products = await Product.find(query).sort({ featured: -1, createdAt: -1 });
-      return res.json({ success: true, count: products.length, data: products, products });
+
+      let sortOption = { featured: -1, createdAt: -1 };
+      if (sort === 'price_asc') sortOption = { price: 1 };
+      if (sort === 'price_desc') sortOption = { price: -1 };
+      if (sort === 'name_asc') sortOption = { name: 1 };
+
+      const products = await Product.find(query).sort(sortOption);
+      return res.json({
+        success: true,
+        count: products.length,
+        data: products,
+        products
+      });
     }
 
     // In-Memory Demo Fallback
     const query = { available: true };
-    if (category && category !== 'All') query.category = category;
-    if (featured === 'true') query.featured = true;
+    if (category && category !== 'All') {
+      query.category = category;
+    }
+    if (featured === 'true') {
+      query.featured = true;
+    }
     if (search && search.trim()) {
       query.$or = [
         { name: { $regex: search.trim(), $options: 'i' } },
         { description: { $regex: search.trim(), $options: 'i' } }
       ];
     }
-    const products = await demoStore.findProducts(query).sort({ featured: -1, createdAt: -1 });
-    return res.json({ success: true, count: products.length, data: products, products });
+
+    let sortRules = { featured: -1, createdAt: -1 };
+    if (sort === 'price_asc') sortRules = { price: 1 };
+    if (sort === 'price_desc') sortRules = { price: -1 };
+    if (sort === 'name_asc') sortRules = { name: 1 };
+
+    const products = await demoStore.findProducts(query).sort(sortRules);
+    return res.json({
+      success: true,
+      count: products.length,
+      data: products,
+      products
+    });
   } catch (err) {
     console.error('GET /products error:', err);
     res.status(500).json({ success: false, message: 'Failed to fetch products.' });
@@ -55,13 +95,13 @@ router.get('/:id', async (req, res) => {
     if (isMongo()) {
       const product = await Product.findById(req.params.id);
       if (!product) return res.status(404).json({ success: false, message: 'Product not found.' });
-      return res.json({ success: true, data: product });
+      return res.json({ success: true, data: product, product });
     }
 
     // Demo store fallback
     const product = await demoStore.findProductById(req.params.id);
     if (!product) return res.status(404).json({ success: false, message: 'Product not found.' });
-    return res.json({ success: true, data: product });
+    return res.json({ success: true, data: product, product });
   } catch (err) {
     if (err.name === 'CastError') return res.status(400).json({ success: false, message: 'Invalid product ID.' });
     console.error('GET /products/:id error:', err);

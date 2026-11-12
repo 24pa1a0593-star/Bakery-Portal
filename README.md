@@ -168,17 +168,21 @@ cd backend && npm run seed
 
 ## 📡 API Endpoints
 
-### Public Endpoints
+### Public & Customer Endpoints
 | Method | Endpoint | Description |
 |---|---|---|
 | GET | `/api/health` | Health check |
-| GET | `/api/products` | List products (`?category=&search=&featured=true`) |
-| GET | `/api/products/:id` | Single product |
+| GET | `/api/products` | List products (`?category=&search=&featured=true&sort=`) |
+| GET | `/api/products/:id` | Single product details |
+| POST | `/api/auth/register` | Register new customer account |
+| POST | `/api/auth/login` | Customer & Admin login (JWT token) |
+| POST | `/api/auth/forgot-password` | Request password reset instructions |
+| GET | `/api/auth/profile` | Customer profile (JWT Required) |
+| PUT | `/api/auth/profile` | Update profile information (JWT Required) |
 | POST | `/api/orders` | Place regular order |
 | POST | `/api/orders/custom` | Place custom cake order |
 | GET | `/api/orders/track` | Track order (`?orderId=&phone=`) |
 | POST | `/api/contact` | Submit contact message |
-| POST | `/api/auth/login` | Admin login |
 
 ### Admin Endpoints (JWT Required)
 | Method | Endpoint | Description |

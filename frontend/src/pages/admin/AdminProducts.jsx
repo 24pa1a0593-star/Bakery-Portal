@@ -6,7 +6,17 @@ import { getCategoryImage } from '../../components/ProductCard';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
 
-const CATEGORIES = ['Cakes', 'Cupcakes', 'Cookies', 'Pastries', 'Breads'];
+const CATEGORIES = [
+  'Cakes',
+  'Birthday Cakes',
+  'Pastries',
+  'Cupcakes',
+  'Cookies',
+  'Bread',
+  'Donuts',
+  'Chocolates',
+  'Desserts'
+];
 
 const AdminProducts = () => {
   const [products, setProducts] = useState([]);
@@ -198,11 +208,15 @@ const AdminProducts = () => {
 
   const getBadgeClass = (category) => {
     const cat = (category || '').toLowerCase();
+    if (cat.includes('birthday')) return 'badge-cakes';
     if (cat.includes('cupcake')) return 'badge-cupcakes';
     if (cat.includes('cake')) return 'badge-cakes';
     if (cat.includes('cookie')) return 'badge-cookies';
     if (cat.includes('pastr')) return 'badge-pastries';
     if (cat.includes('bread')) return 'badge-breads';
+    if (cat.includes('donut')) return 'badge-cupcakes';
+    if (cat.includes('choc')) return 'badge-cookies';
+    if (cat.includes('dessert')) return 'badge-pastries';
     return 'badge-cakes';
   };
 
